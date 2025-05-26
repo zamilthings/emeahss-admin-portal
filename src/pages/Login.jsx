@@ -41,7 +41,6 @@ function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setisLoading(true);
     if (!email || !password) {
       showToast('Please fill in all fields', 'warning');
       setLoading(false);
@@ -50,6 +49,7 @@ function Login() {
 
     try {
       await signInWithEmailAndPassword(auth, email, password);
+      setisLoading(true);
       showToast('Login successful!', 'success');
       navigate('/search');
     } catch (error) {
@@ -129,7 +129,7 @@ function Login() {
             }}
           />
 
-          <Button variant="contained" fullWidth onClick={handleSubmit} disabled={loading}>
+          <Button variant="contained" sx={{ py: 1.4 }} fullWidth onClick={handleSubmit} disabled={loading}>
             {loading ? 'Logging in...' : 'Login'}
           </Button>
         </Paper>

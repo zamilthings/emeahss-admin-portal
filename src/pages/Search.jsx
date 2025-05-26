@@ -46,7 +46,7 @@ function Search() {
     setStudentDetails({});
     setOpenWarningAlert(false);
 
-    if (applicationNo === "M0000" || applicationNo === "C0000") {
+    if (applicationNo === "ME000" || applicationNo === "CE0000") {
       alert("Access Denied");
       setOpenWarningAlert(true);
       return;
@@ -93,7 +93,8 @@ function Search() {
     try {
       if (isManagementQuota) {
         await updateDoc(studentRef, {
-          Nominee: selectedNominee || ""
+          Nominee: selectedNominee || "",
+          Payment: paymentStatus || ""
         });
       } else {
         await updateDoc(studentRef, {
@@ -191,14 +192,6 @@ function Search() {
                       )}
                     />
                   </FormControl>
-                  <Button
-                    type="submit"
-                    disabled={!studentDetails.length}
-                    variant="contained"
-                    color="success"
-                  >
-                    <CheckIcon />
-                  </Button>
                   <FormControl fullWidth>
                     <InputLabel>Payment Status</InputLabel>
                     <Select
