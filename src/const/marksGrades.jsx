@@ -15,6 +15,6 @@ export const cbseMarksToGrade = {
     '6': 'B2',
     '5': 'C1',
     '4': 'C2',
-    '4': 'D1',
+    '3': 'D1',
     '2': 'D2',
 }
