@@ -34,9 +34,8 @@ import SearchIcon from '@mui/icons-material/Search';
 import DownloadIcon from '@mui/icons-material/Download';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import FilterListIcon from '@mui/icons-material/FilterList';
-import PersonIcon from '@mui/icons-material/Person';
-import SchoolIcon from '@mui/icons-material/School';
-import PhoneIcon from '@mui/icons-material/Phone';
+import { BanknoteArrowUp, BanknoteX, UserRoundX, UserRoundCheck, UsersRound } from 'lucide-react';
+
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../config/firebase";
 import { useAuth } from "../context/AuthContext";
@@ -99,7 +98,13 @@ function ViewAll() {
             withNominee: data.filter(entry => entry.Nominee && entry.Nominee.trim() !== "").length,
             withoutNominee: data.filter(entry => !entry.Nominee || entry.Nominee.trim() === "").length,
             paid: data.filter(entry => entry.Payment === "PAID").length,
-            unpaid: data.filter(entry => entry.Payment === "UNPAID").length
+            unpaid: data.filter(
+                entry =>
+                  entry.Payment === "UNPAID" ||
+                  !entry.Payment ||
+                  entry.Payment.trim() === ""
+              ).length
+              
         };
         setStats(stats);
     };
@@ -199,23 +204,42 @@ function ViewAll() {
         }
     };
 
-    const StatsCard = ({ title, value, icon, color = "primary" }) => (
-        <Card sx={{ height: '100%', background: `linear-gradient(135deg, ${color === 'primary' ? '#1976d2' : color === 'success' ? '#2e7d32' : color === 'warning' ? '#ed6c02' : '#d32f2f'} 0%, ${color === 'primary' ? '#42a5f5' : color === 'success' ? '#66bb6a' : color === 'warning' ? '#ff9800' : '#f44336'} 100%)`, color: 'white' }}>
-            <CardContent sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <Box>
-                    <Typography variant="h4" component="div" fontWeight="bold">
-                        {value}
-                    </Typography>
-                    <Typography variant="body2">
-                        {title}
-                    </Typography>
-                </Box>
-                <Box sx={{ opacity: 0.8 }}>
-                    {icon}
-                </Box>
-            </CardContent>
-        </Card>
-    );
+    const StatsCard = ({ title, value, icon, color = "primary" }) => {
+
+        return (
+            <Card
+                variant="outlined"
+                sx={{
+                    height: "100%",
+                    px: 2,
+                    py: 3,
+                    boxShadow: "0 2px 10px rgba(0,0,0,0.05)",
+                    borderRadius: 2,
+                }}
+            >
+                <CardContent
+                    sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                    }}
+                >
+                    <Box>
+                        <Typography variant="h4" fontWeight="bold">
+                            {value}
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary">
+                            {title}
+                        </Typography>
+                    </Box>
+                    <Box>
+                        {icon}
+                    </Box>
+                </CardContent>
+            </Card>
+        );
+    };
+
 
     // Paginated data
     const paginatedEntries = filteredEntries.slice(
@@ -240,43 +264,53 @@ function ViewAll() {
                             <StatsCard
                                 title="Total Applications"
                                 value={stats.total}
-                                icon={<PersonIcon sx={{ fontSize: 40 }} />}
+                                icon={<UsersRound color="#1976d2" size={35} />}
                                 color="primary"
+                                iconColor="#0c4a6e"
                             />
+
                         </Grid>
                         <Grid item xs={12} sm={6} md={2.4}>
                             <StatsCard
                                 title="With Nominee"
                                 value={stats.withNominee}
-                                icon={<SchoolIcon sx={{ fontSize: 40 }} />}
+                                icon={<UserRoundCheck color="#2e7d32" size={35} />}
                                 color="success"
+                                iconColor="#065f46"
                             />
                         </Grid>
                         <Grid item xs={12} sm={6} md={2.4}>
+
                             <StatsCard
                                 title="Without Nominee"
                                 value={stats.withoutNominee}
-                                icon={<PersonIcon sx={{ fontSize: 40 }} />}
+                                icon={<UserRoundX color="#ed6c02" size={35} />}
                                 color="warning"
+                                iconColor="#b45309"
                             />
                         </Grid>
                         <Grid item xs={12} sm={6} md={2.4}>
+
                             <StatsCard
                                 title="Paid"
                                 value={stats.paid}
-                                icon={<PhoneIcon sx={{ fontSize: 40 }} />}
+                                icon={<BanknoteArrowUp color="#2e7d32" size={35} />}
                                 color="success"
+                                iconColor="#0f766e"
                             />
+
                         </Grid>
                         <Grid item xs={12} sm={6} md={2.4}>
                             <StatsCard
                                 title="Unpaid"
                                 value={stats.unpaid}
-                                icon={<PhoneIcon sx={{ fontSize: 40 }} />}
+                                icon={<BanknoteX color="#d32f2f" size={35} />}
                                 color="error"
+                                iconColor="#b91c1c"
                             />
                         </Grid>
                     </Grid>
+
 
                     {/* Header and Controls */}
                     <Paper sx={{ p: 3, mb: 2 }}>
