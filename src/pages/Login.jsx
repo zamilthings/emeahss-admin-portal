@@ -94,7 +94,7 @@ function Login() {
       <Box className="w-5/6 md:w-5/12 md:max-w-[500px]">
         <Paper elevation={3} className="flex justify-center items-center flex-col gap-4 px-10 py-12">
           <form onSubmit={handleSubmit} className="w-full flex flex-col gap-4">
-            <img className="w-20" src={logo} alt="logo" />
+            <img className="w-20 mx-auto" src={logo} alt="logo" />
             <div className="text-center">
               <Typography variant="h4" style={{ fontWeight: "bold", color: "darkblue" }}>
                 EMEAHSS
