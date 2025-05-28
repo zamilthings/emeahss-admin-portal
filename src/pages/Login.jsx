@@ -93,45 +93,47 @@ function Login() {
     >
       <Box className="w-5/6 md:w-5/12 md:max-w-[500px]">
         <Paper elevation={3} className="flex justify-center items-center flex-col gap-4 px-10 py-12">
-          <img className="w-20" src={logo} alt="logo" />
-          <div className="text-center">
-            <Typography variant="h4" style={{ fontWeight: "bold", color: "darkblue" }}>
-              EMEAHSS
-            </Typography>
-            <Typography variant="h6" style={{ color: "darkblue" }}>
-              Admin Panel
-            </Typography>
-          </div>
+          <form onSubmit={handleSubmit} className="w-full flex flex-col gap-4">
+            <img className="w-20" src={logo} alt="logo" />
+            <div className="text-center">
+              <Typography variant="h4" style={{ fontWeight: "bold", color: "darkblue" }}>
+                EMEAHSS
+              </Typography>
+              <Typography variant="h6" style={{ color: "darkblue" }}>
+                Admin Panel
+              </Typography>
+            </div>
 
-          <TextField
-            label="Email"
-            fullWidth
-            variant="outlined"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
+            <TextField
+              label="Email"
+              fullWidth
+              variant="outlined"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
 
-          <TextField
-            label="Password"
-            fullWidth
-            type={showPassword ? "text" : "password"}
-            variant="outlined"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton onClick={() => setShowPassword(!showPassword)} edge="end">
-                    {showPassword ? <VisibilityOff /> : <Visibility />}
-                  </IconButton>
-                </InputAdornment>
-              )
-            }}
-          />
+            <TextField
+              label="Password"
+              fullWidth
+              type={showPassword ? "text" : "password"}
+              variant="outlined"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton onClick={() => setShowPassword(!showPassword)} edge="end">
+                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                )
+              }}
+            />
 
-          <Button variant="contained" sx={{ py: 1.4 }} fullWidth onClick={handleSubmit} disabled={loading}>
-            {loading ? 'Logging in...' : 'Login'}
-          </Button>
+            <Button variant="contained" sx={{ py: 1.4 }} fullWidth type="submit" disabled={loading}>
+              {loading ? 'Logging in...' : 'Login'}
+            </Button>
+          </form>
         </Paper>
       </Box>
 
