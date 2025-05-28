@@ -35,10 +35,14 @@ import DownloadIcon from '@mui/icons-material/Download';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import { BanknoteArrowUp, BanknoteX, UserRoundX, UserRoundCheck, UsersRound } from 'lucide-react';
-
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../config/firebase";
 import { useAuth } from "../context/AuthContext";
+
+import { format, parse, isValid } from 'date-fns';
+
+
+
 
 function ViewAll() {
     const [allEntries, setAllEntries] = useState([]);
@@ -255,6 +259,16 @@ function ViewAll() {
         page * rowsPerPage + rowsPerPage
     );
 
+    function parseDOB(dobString) {
+        // Try parsing as MM/DD/YYYY (new format)
+        let parsedDate = parse(dobString, 'MM/dd/yyyy', new Date());
+        if (!isValid(parsedDate)) {
+            // Fallback: Try parsing as DD/MM/YYYY (old format)
+            parsedDate = parse(dobString, 'dd/MM/yyyy', new Date());
+        }
+        return isValid(parsedDate) ? format(parsedDate, 'MM/dd/yyyy') : 'Invalid date';
+    }
+
     return (
         <div>
             <NavBar currentPage={"View All Entries"} />
@@ -397,7 +411,7 @@ function ViewAll() {
                                 <TableHead>
                                     <TableRow>
                                         {[
-                                            "App No", "Name", "Mobile", "DOB", "Reg No",
+                                            "App No", "Name", "Mobile", "DOB (mm/dd/y)", "Reg No",
                                             "Father", "School", "Gender", "Location",
                                             "Nominee", "Payment", "Courses"
                                         ].map((header) => (
@@ -451,7 +465,7 @@ function ViewAll() {
                                                     {row.Name}
                                                 </TableCell>
                                                 <TableCell>{row.MobileNumber}</TableCell>
-                                                <TableCell>{row.DateOfBirth}</TableCell>
+                                                <TableCell>{parseDOB(row.DateOfBirth)}</TableCell>
                                                 <TableCell>{row.RegNumber}</TableCell>
                                                 <TableCell>{row.FatherName}</TableCell>
                                                 <TableCell sx={{ maxWidth: 150, overflow: 'hidden', textOverflow: 'ellipsis' }}>
