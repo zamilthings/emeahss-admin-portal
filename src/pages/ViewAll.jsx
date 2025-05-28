@@ -82,6 +82,14 @@ function ViewAll() {
                 });
             });
 
+            // Sort by AppNo in ascending order
+            data.sort((a, b) => {
+                // Extract numeric parts
+                const aNum = parseInt(a.AppNo?.replace('ME', '') || '0');
+                const bNum = parseInt(b.AppNo?.replace('ME', '') || '0');
+                return aNum - bNum;
+            });
+
             setAllEntries(data);
             calculateStats(data);
         } catch (error) {
@@ -100,11 +108,11 @@ function ViewAll() {
             paid: data.filter(entry => entry.Payment === "PAID").length,
             unpaid: data.filter(
                 entry =>
-                  entry.Payment === "UNPAID" ||
-                  !entry.Payment ||
-                  entry.Payment.trim() === ""
-              ).length
-              
+                    entry.Payment === "UNPAID" ||
+                    !entry.Payment ||
+                    entry.Payment.trim() === ""
+            ).length
+
         };
         setStats(stats);
     };

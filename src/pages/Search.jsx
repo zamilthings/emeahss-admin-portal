@@ -57,7 +57,7 @@ function Search() {
       // Query to find the application by AppNo
       const q = query(
         collection(db, quotaCollection),
-        where("AppNo", "==", applicationNo)
+        where("AppNo", "==", applicationNo.toUpperCase())
       );
       const querySnapshot = await getDocs(q);
       console.log("Query Snapshot:", querySnapshot);
