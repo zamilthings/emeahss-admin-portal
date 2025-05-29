@@ -23,6 +23,7 @@ import axios from "axios";
 import Loader from "./Loader";
 import { cbseGradesOptions, courseOptions, examOptions, genderOptions, panchayatOptions, religionOptions, stateGradesOptions } from "../const/options";
 import GradeView from "./GradeView";
+import dayjs from "dayjs";
 
 import { doc, updateDoc, getDoc } from "firebase/firestore";
 import { db } from "@/config/firebase";
@@ -234,7 +235,7 @@ function StudentDetails({ data, isManagement }) {
               <b>Date of Birth: </b>
               {editMode ?
                 <TextField type="text" name="DateOfBirth" size="small" variant="outlined" onChange={handleChange} value={editData.DateOfBirth} disabled /> :
-                <>{student.DateOfBirth}</>
+                <>{dayjs(student.DateOfBirth, "MM/DD/YYYY").format("DD/MM/YYYY")}</>
               }
             </TableCell>
           </TableRow>

@@ -38,7 +38,7 @@ import { BanknoteArrowUp, BanknoteX, UserRoundX, UserRoundCheck, UsersRound } fr
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../config/firebase";
 import { useAuth } from "../context/AuthContext";
-
+import dayjs from 'dayjs';
 import { format, parse, isValid } from 'date-fns';
 
 
@@ -411,7 +411,7 @@ function ViewAll() {
                                 <TableHead>
                                     <TableRow>
                                         {[
-                                            "App No", "Name", "Mobile", "DOB (mm/dd/y)", "Reg No",
+                                            "App No", "Name", "Mobile", "DOB", "Reg No",
                                             "Father", "School", "Gender", "Location",
                                             "Nominee", "Payment", "Courses"
                                         ].map((header) => (
@@ -465,7 +465,7 @@ function ViewAll() {
                                                     {row.Name}
                                                 </TableCell>
                                                 <TableCell>{row.MobileNumber}</TableCell>
-                                                <TableCell>{parseDOB(row.DateOfBirth)}</TableCell>
+                                                <TableCell>{dayjs(row.DateOfBirth, "MM/DD/YYYY").format("DD/MM/YYYY")}</TableCell>
                                                 <TableCell>{row.RegNumber}</TableCell>
                                                 <TableCell>{row.FatherName}</TableCell>
                                                 <TableCell sx={{ maxWidth: 150, overflow: 'hidden', textOverflow: 'ellipsis' }}>
