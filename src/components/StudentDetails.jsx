@@ -23,7 +23,8 @@ import axios from "axios";
 import Loader from "./Loader";
 import { cbseGradesOptions, courseOptions, examOptions, genderOptions, panchayatOptions, religionOptions, stateGradesOptions } from "../const/options";
 import GradeView from "./GradeView";
-import dayjs from "dayjs";
+import { format, parse, isValid } from 'date-fns';
+
 
 import { doc, updateDoc, getDoc } from "firebase/firestore";
 import { db } from "@/config/firebase";
@@ -134,6 +135,15 @@ function StudentDetails({ data, isManagement }) {
     }
   };
 
+  function parseDOB(dobString) {
+    // Try parsing as MM/DD/YYYY (new format)
+    let parsedDate = parse(dobString, 'MM/dd/yyyy', new Date());
+    if (!isValid(parsedDate)) {
+      // Fallback: Try parsing as DD/MM/YYYY (old format)
+      parsedDate = parse(dobString, 'dd/MM/yyyy', new Date());
+    }
+    return isValid(parsedDate) ? format(parsedDate, 'dd/MM/yyyy') : 'Invalid date';
+  }
 
   return (
     <TableContainer component={Paper} className="mt-3 p-2">
@@ -235,7 +245,7 @@ function StudentDetails({ data, isManagement }) {
               <b>Date of Birth: </b>
               {editMode ?
                 <TextField type="text" name="DateOfBirth" size="small" variant="outlined" onChange={handleChange} value={editData.DateOfBirth} disabled /> :
-                <>{dayjs(student.DateOfBirth, "MM/DD/YYYY").format("DD/MM/YYYY")}</>
+                <>{parseDOB(student.DateOfBirth)}</>
               }
             </TableCell>
           </TableRow>
