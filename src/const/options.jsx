@@ -5,7 +5,7 @@ export const nomineesOptions = [
   "KPA Majeed MLA",
   "PK Moosa Alias Balathil Baapu",
   "Nalakath Soopy",
-  "K Muhammed Unni Haji",
+  "Abdul rafeeq N",
   "Prof KM Aboobacker",
   "Hashim V",
   "ET Muhammed Basheer",
@@ -16,7 +16,7 @@ export const nomineesOptions = [
   "Akbar KM",
   "Ashique PK",
   "CP Suhail",
-  "Farook", 
+  "Farook",
 ];
 
 //gender
@@ -36,7 +36,7 @@ export const religionOptions = [
 export const examOptions = [
   { value: 'STATE', label: 'STATE' },
   { value: 'CBSE', label: 'CBSE' },
-  { value: 'Other', label:'Other' }
+  { value: 'Other', label: 'Other' }
 ]
 
 //state & other grade
