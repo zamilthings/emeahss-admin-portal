@@ -19,7 +19,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
 import ClearIcon from '@mui/icons-material/Clear';
 import { useState } from "react";
-import axios from "axios";
+// import axios from "axios";
 import Loader from "./Loader";
 import { cbseGradesOptions, courseOptions, examOptions, genderOptions, panchayatOptions, religionOptions, stateGradesOptions } from "../const/options";
 import GradeView from "./GradeView";
