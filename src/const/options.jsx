@@ -17,6 +17,7 @@ export const nomineesOptions = [
   "Ashique PK",
   "CP Suhail",
   "Farook",
+  "Abdul Latheef KM"
 ];
 
 //gender
