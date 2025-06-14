@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Box,
   Paper,
@@ -18,7 +18,7 @@ import { nomineesOptions } from "../const/options";
 import StudentDetails from "../components/StudentDetails";
 import WarningAlert from "../components/alerts/WarningAlert";
 import SuccessAlert from "../components/alerts/SuccessAlert";
-
+import { useParams } from 'react-router-dom';
 import { db } from '@/config/firebase'; // your initialized Firestore DB
 import {
   collection,
@@ -37,9 +37,11 @@ function Search() {
   const [selectedNominee, setSelectedNominee] = useState("");
   const [paymentStatus, setPaymentStatus] = useState("");
   const [isManagementQuota] = useState(true);
-
+  const { applicationNooo } = useParams();
+  // console.log("Application No from Params:", applicationNooo);
   const [openSuccessAlert, setOpenSuccessAlert] = useState(false);
   const [openWarningAlert, setOpenWarningAlert] = useState(false);
+
 
   const handleSearch = async (e) => {
     e.preventDefault();
@@ -60,14 +62,51 @@ function Search() {
         where("AppNo", "==", applicationNo.toUpperCase())
       );
       const querySnapshot = await getDocs(q);
-      console.log("Query Snapshot:", querySnapshot);
+      // console.log("Query Snapshot:", querySnapshot);
 
       if (!querySnapshot.empty) {
         const results = querySnapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
         }));
-        console.log(results);
+        // console.log(results);
+        setStudentDetails(results);
+        setSelectedNominee("");
+        setPaymentStatus("");
+      } else {
+        setOpenWarningAlert(true);
+      }
+    } catch (error) {
+      console.error("Search Error:", error);
+      alert("Something went wrong while searching.");
+    }
+  };
+  const handleSearch2 = async (applicationNo) => {
+    setStudentDetails({});
+    setOpenWarningAlert(false);
+
+    if (applicationNo === "ME000" || applicationNo === "CE0000") {
+      alert("Access Denied");
+      setOpenWarningAlert(true);
+      return;
+    }
+
+    try {
+      const quotaCollection = "applications"; // Default collection for both quotas
+      // Query to find the application by AppNo
+      const q = query(
+        collection(db, quotaCollection),
+        where("AppNo", "==", applicationNo.toUpperCase())
+      );
+      const querySnapshot = await getDocs(q);
+      // console.log("Query Snapshot:", querySnapshot);
+
+      if (!querySnapshot.empty) {
+        const results = querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        // console.log(results);
         setStudentDetails(results);
         setSelectedNominee("");
         setPaymentStatus("");
@@ -110,6 +149,13 @@ function Search() {
     }
   };
 
+  useEffect(() => {
+    if (applicationNooo) {
+      setApplicationNo(applicationNooo);
+      handleSearch2(applicationNooo); // Trigger search on mount with the application number from params
+    }
+
+  }, [applicationNooo]);
 
 
 

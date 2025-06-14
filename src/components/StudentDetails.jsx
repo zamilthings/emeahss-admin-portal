@@ -32,7 +32,7 @@ import { db } from "@/config/firebase";
 
 
 function StudentDetails({ data, isManagement }) {
-
+  // console.log("StudentDetails data:", data);
   const [editMode, setEditMode] = useState(false);
 
 
@@ -48,7 +48,7 @@ function StudentDetails({ data, isManagement }) {
       ...editData,
       [e.target.name]: e.target.value,
     });
-    console.log(e)
+    // console.log(e)
   };
 
   const handleBoardChange = (e) => {
@@ -130,12 +130,13 @@ function StudentDetails({ data, isManagement }) {
       if (error.code === 'permission-denied') {
         alert("You do not have permission to update this document.");
       }
-      console.log("Update failed:", error);
+      // console.log("Update failed:", error);
       setIsloading(false);
     }
   };
 
   function parseDOB(dobString) {
+    if (!dobString) return 'Invalid date';
     // Try parsing as MM/DD/YYYY (new format)
     let parsedDate = parse(dobString, 'MM/dd/yyyy', new Date());
     if (!isValid(parsedDate)) {
@@ -154,7 +155,7 @@ function StudentDetails({ data, isManagement }) {
             <TableCell colSpan={2} className="py-3 bg-slate-100 rounded-md">
               <div className="flex justify-between items-center">
                 <Typography variant="" className="font-semibold text-sm md:text-3xl px-2">
-                  Student&apos;s Details  <span className="text-blue-700">{student.AppNo}</span>
+                  Student&apos;s Details  <span className="text-blue-700">{student?.AppNo}</span>
                 </Typography>
 
                 {editMode ?
@@ -188,27 +189,27 @@ function StudentDetails({ data, isManagement }) {
               <b>Name: </b>
               {editMode ?
                 <TextField type="text" name="Name" size="small" variant="outlined" onChange={handleChange} value={editData.Name} /> :
-                <>{student.Name}</>
+                <>{student?.Name}</>
               }
             </TableCell>
-            {student.Nominee && (
+            {student?.Nominee && (
               <TableCell
                 sx={{
                   color: "green",
                 }}
               >
                 <b>Nominee: </b>
-                {student.Nominee}
+                {student?.Nominee}
               </TableCell>
             )}
-            {student.Payment && (
+            {student?.Payment && (
               <TableCell
                 sx={{
-                  color: student.Payment === "PAID" ? "green" : "red",
+                  color: student?.Payment === "PAID" ? "green" : "red",
                 }}
               >
                 <b>Payment: </b>
-                {student.Payment}
+                {student?.Payment}
               </TableCell>
             )}
           </TableRow>
@@ -218,14 +219,14 @@ function StudentDetails({ data, isManagement }) {
               <b>Mobile Number: </b>
               {editMode ?
                 <TextField disabled type="text" name="MobileNumber" size="small" variant="outlined" onChange={handleChange} value={editData.MobileNumber} /> :
-                <>{student.MobileNumber}</>
+                <>{student?.MobileNumber}</>
               }
             </TableCell>
             <TableCell>
               <b>Whatsapp Number: </b>
               {editMode ?
                 <TextField type="text" name="WhatsappNumber" size="small" variant="outlined" onChange={handleChange} value={editData.WhatsappNumber} /> :
-                <>{student.WhatsappNumber}</>
+                <>{student?.WhatsappNumber}</>
               }
             </TableCell>
           </TableRow>
@@ -235,7 +236,7 @@ function StudentDetails({ data, isManagement }) {
               <b>Single Window Number: </b>
               {editMode ?
                 <TextField type="text" name="SingleWindowNo" size="small" variant="outlined" onChange={handleChange} value={editData.SingleWindowNo} /> :
-                <>{student.SingleWindowNo}</>
+                <>{student?.SingleWindowNo}</>
               }
             </TableCell>
           </TableRow>
@@ -245,7 +246,7 @@ function StudentDetails({ data, isManagement }) {
               <b>Date of Birth: </b>
               {editMode ?
                 <TextField type="text" name="DateOfBirth" size="small" variant="outlined" onChange={handleChange} value={editData.DateOfBirth} disabled /> :
-                <>{parseDOB(student.DateOfBirth)}</>
+                <>{parseDOB(student?.DateOfBirth)}</>
               }
             </TableCell>
           </TableRow>
@@ -264,7 +265,7 @@ function StudentDetails({ data, isManagement }) {
                     <MenuItem key={option.value} value={option.value}>{option.label}</MenuItem>
                   ))}
                 </Select> :
-                <>{student.Gender}</>
+                <>{student?.Gender}</>
               }
 
             </TableCell>
@@ -281,7 +282,7 @@ function StudentDetails({ data, isManagement }) {
                     <MenuItem key={option.value} value={option.value}>{option.label}</MenuItem>
                   ))}
                 </Select> :
-                <>{student.Religion}</>
+                <>{student?.Religion}</>
               }
             </TableCell>
           </TableRow>
@@ -291,14 +292,14 @@ function StudentDetails({ data, isManagement }) {
               <b>Register Number: </b>
               {editMode ?
                 <TextField type="text" name="RegNumber" size="small" variant="outlined" onChange={handleChange} value={editData.RegNumber} /> :
-                <>{student.RegNumber}</>
+                <>{student?.RegNumber}</>
               }
             </TableCell>
             <TableCell>
               <b>Year: </b>
               {editMode ?
                 <TextField type="text" name="Year" size="small" variant="outlined" onChange={handleChange} value={editData.Year} /> :
-                <> {student.Year}</>
+                <> {student?.Year}</>
               }
             </TableCell>
           </TableRow>
@@ -321,7 +322,7 @@ function StudentDetails({ data, isManagement }) {
                   <FormHelperText sx={{ color: "orange" }} >Changing the board will erase the previous grades, so please re-enter them.</FormHelperText>
                 </>
                 :
-                <>{student.Board}</>
+                <>{student?.Board}</>
               }
             </TableCell>
           </TableRow>
@@ -334,7 +335,7 @@ function StudentDetails({ data, isManagement }) {
                   <TextField type="text" name="SchoolName" size="small" variant="outlined" className="w-2/4" onChange={handleChange} value={editData.SchoolName} />
                   :
                   <>
-                    {student.SchoolName}
+                    {student?.SchoolName}
                   </>
                 }
               </div>
@@ -346,7 +347,7 @@ function StudentDetails({ data, isManagement }) {
               <b>Father Name: </b>
               {editMode ?
                 <TextField type="text" name="FatherName" size="small" variant="outlined" onChange={handleChange} value={editData.FatherName} /> :
-                <>{student.FatherName}</>
+                <>{student?.FatherName}</>
               }
             </TableCell>
           </TableRow>
@@ -356,7 +357,7 @@ function StudentDetails({ data, isManagement }) {
               <b>Mother Name: </b>
               {editMode ?
                 <TextField type="text" name="MotherName" size="small" variant="outlined" onChange={handleChange} value={editData.MotherName} /> :
-                <>{student.MotherName}</>
+                <>{student?.MotherName}</>
               }
             </TableCell>
           </TableRow>
@@ -366,14 +367,14 @@ function StudentDetails({ data, isManagement }) {
               <b>House Name: </b>
               {editMode ?
                 <TextField type="text" name="HouseName" size="small" variant="outlined" onChange={handleChange} value={editData.HouseName} /> :
-                <>{student.HouseName}</>
+                <>{student?.HouseName}</>
               }
             </TableCell>
             <TableCell>
               <b>Post Office: </b>
               {editMode ?
                 <TextField type="text" name="PostOffice" size="small" variant="outlined" onChange={handleChange} value={editData.PostOffice} /> :
-                <>{student.PostOffice}</>
+                <>{student?.PostOffice}</>
               }
             </TableCell>
           </TableRow>
@@ -392,14 +393,14 @@ function StudentDetails({ data, isManagement }) {
                     <MenuItem key={option.value} value={option.value}>{option.label}</MenuItem>
                   ))}
                 </Select> :
-                <> {student.Panchayath}</>
+                <> {student?.Panchayath}</>
               }
             </TableCell>
             <TableCell>
               <b>Ward: </b>
               {editMode ?
                 <TextField type="text" name="Ward" size="small" variant="outlined" onChange={handleChange} value={editData.Ward} /> :
-                <> {student.Ward}</>
+                <> {student?.Ward}</>
               }
             </TableCell>
           </TableRow>
@@ -755,7 +756,7 @@ function StudentDetails({ data, isManagement }) {
                     <MenuItem key={option.value} value={option.value}>{option.label}</MenuItem>
                   ))}
                 </Select> :
-                <>{student.coursePreference1}</>
+                <>{student?.coursePreference1}</>
               }
             </TableCell>
           </TableRow>
@@ -777,7 +778,7 @@ function StudentDetails({ data, isManagement }) {
                     <MenuItem key={option.value} value={option.value}>{option.label}</MenuItem>
                   ))}
                 </Select> :
-                <>{student.coursePreference2}</>
+                <>{student?.coursePreference2}</>
               }
             </TableCell>
           </TableRow>
@@ -795,7 +796,7 @@ function StudentDetails({ data, isManagement }) {
                   </b>
                   {editMode ?
                     <TextField type="text" name="ExtraCurricular" size="small" variant="outlined" onChange={handleChange} value={editData.ExtraCurricular} /> :
-                    <> {student.ExtraCurricular}</>
+                    <> {student?.ExtraCurricular}</>
                   }
 
                 </TableCell>
@@ -812,7 +813,7 @@ function StudentDetails({ data, isManagement }) {
                   </b>
                   {editMode ?
                     <TextField type="number" name="SportsStateLevel" size="small" variant="outlined" onChange={handleChange} value={editData.SportsStateLevel} /> :
-                    <> {student.SportsStateLevel}</>
+                    <> {student?.SportsStateLevel}</>
                   }
                 </TableCell>
               </TableRow>
@@ -845,26 +846,26 @@ function StudentDetails({ data, isManagement }) {
                 <TableCell sx={{ borderRight: "1px solid #d8dceb" }}>
                   {editMode ?
                     <TextField type="number" name="SportsDistrictA" size="small" variant="outlined" onChange={handleChange} value={editData.SportsDistrictA} /> :
-                    <>{student.SportsDistrictA}</>
+                    <>{student?.SportsDistrictA}</>
                   }
 
                 </TableCell>
                 <TableCell sx={{ borderRight: "1px solid #d8dceb" }}>
                   {editMode ?
                     <TextField type="number" name="SportsDistrictB" size="small" variant="outlined" onChange={handleChange} value={editData.SportsDistrictB} /> :
-                    <>{student.SportsDistrictB}</>
+                    <>{student?.SportsDistrictB}</>
                   }
                 </TableCell>
                 <TableCell sx={{ borderRight: "1px solid #d8dceb" }}>
                   {editMode ?
                     <TextField type="number" name="SportsDistrictC" size="small" variant="outlined" onChange={handleChange} value={editData.SportsDistrictC} /> :
-                    <>{student.SportsDistrictC}</>
+                    <>{student?.SportsDistrictC}</>
                   }
                 </TableCell>
                 <TableCell sx={{ borderRight: "1px solid #d8dceb" }}>
                   {editMode ?
                     <TextField type="number" name="SportsDistrictParticipation" size="small" variant="outlined" onChange={handleChange} value={editData.SportsDistrictParticipation} /> :
-                    <>{student.SportsDistrictParticipation}</>
+                    <>{student?.SportsDistrictParticipation}</>
                   }
                 </TableCell>
               </TableRow>
@@ -884,7 +885,7 @@ function StudentDetails({ data, isManagement }) {
                   </b>
                   {editMode ?
                     <TextField type="number" name="KalotsavamStateLevel" size="small" variant="outlined" onChange={handleChange} value={editData.KalotsavamStateLevel} /> :
-                    <>{student.KalotsavamStateLevel}</>
+                    <>{student?.KalotsavamStateLevel}</>
                   }
                 </TableCell>
               </TableRow>
@@ -917,25 +918,25 @@ function StudentDetails({ data, isManagement }) {
                 <TableCell sx={{ borderRight: "1px solid #d8dceb" }}>
                   {editMode ?
                     <TextField type="number" name="ArtsDistrictA" size="small" variant="outlined" onChange={handleChange} value={editData.ArtsDistrictA} /> :
-                    <>{student.ArtsDistrictA}</>
+                    <>{student?.ArtsDistrictA}</>
                   }
                 </TableCell>
                 <TableCell sx={{ borderRight: "1px solid #d8dceb" }}>
                   {editMode ?
                     <TextField type="number" name="ArtsDistrictB" size="small" variant="outlined" onChange={handleChange} value={editData.ArtsDistrictB} /> :
-                    <>{student.ArtsDistrictB}</>
+                    <>{student?.ArtsDistrictB}</>
                   }
                 </TableCell>
                 <TableCell sx={{ borderRight: "1px solid #d8dceb" }}>
                   {editMode ?
                     <TextField type="number" name="ArtsDistrictC" size="small" variant="outlined" onChange={handleChange} value={editData.ArtsDistrictC} /> :
-                    <>{student.ArtsDistrictC}</>
+                    <>{student?.ArtsDistrictC}</>
                   }
                 </TableCell>
                 <TableCell sx={{ borderRight: "1px solid #d8dceb" }}>
                   {editMode ?
                     <TextField type="number" name="ArtsDistrictParticipation" size="small" variant="outlined" onChange={handleChange} value={editData.ArtsDistrictParticipation} /> :
-                    <>{student.ArtsDistrictParticipation}</>
+                    <>{student?.ArtsDistrictParticipation}</>
                   }
                 </TableCell>
               </TableRow>
@@ -951,7 +952,7 @@ function StudentDetails({ data, isManagement }) {
                   </b>
                   {editMode ?
                     <TextField type="text" name="NationalOrStateLevelExamination" size="small" variant="outlined" onChange={handleChange} value={editData.NationalOrStateLevelExamination} /> :
-                    <>{student.NationalOrStateLevelExamination}</>
+                    <>{student?.NationalOrStateLevelExamination}</>
                   }
                 </TableCell>
               </TableRow>
@@ -1109,7 +1110,7 @@ function StudentDetails({ data, isManagement }) {
                 <TableCell sx={{ paddingLeft: "50px" }}>
                   {editMode ?
                     <TextField type="text" name="Club" size="small" variant="outlined" onChange={handleChange} value={editData.Club} /> :
-                    <> {student.Club}</>
+                    <> {student?.Club}</>
                   }
                 </TableCell>
               </TableRow>

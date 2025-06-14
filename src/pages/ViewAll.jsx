@@ -26,23 +26,36 @@ import {
     InputLabel,
     Select,
     MenuItem,
-    Stack
+    Stack,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    Slide,
+    AppBar,
+    Toolbar,
 } from "@mui/material";
 import NavBar from "../components/NavBar";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import SearchIcon from '@mui/icons-material/Search';
+import CloseIcon from '@mui/icons-material/Close';
 import DownloadIcon from '@mui/icons-material/Download';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import FilterListIcon from '@mui/icons-material/FilterList';
-import { BanknoteArrowUp, BanknoteX, UserRoundX, UserRoundCheck, UsersRound } from 'lucide-react';
-import { collection, getDocs } from "firebase/firestore";
+import { BanknoteArrowUp, BanknoteX, UserRoundX, UserRoundCheck, UsersRound, ViewIcon } from 'lucide-react';
+import { collection, getDocs, limit, query } from "firebase/firestore";
 import { db } from "../config/firebase";
 import { useAuth } from "../context/AuthContext";
 // import dayjs from 'dayjs';
 import { format, parse, isValid } from 'date-fns';
 
+import { useNavigate } from 'react-router-dom';
+import StudentDetails from "../components/StudentDetails";
+import { ADMIN_EMAILS } from "../const/options";
 
-
+const Transition = React.forwardRef(function Transition(props, ref) {
+    return <Slide direction="up" ref={ref} {...props} />;
+});
 
 function ViewAll() {
     const [allEntries, setAllEntries] = useState([]);
@@ -53,6 +66,8 @@ function ViewAll() {
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [error, setError] = useState("");
     const [filterBy, setFilterBy] = useState("all");
+    const [selectedStudent, setSelectedStudent] = useState(null);
+    const [openView, setOpenView] = useState(false);
     const [stats, setStats] = useState({
         total: 0,
         withNominee: 0,
@@ -60,6 +75,9 @@ function ViewAll() {
         paid: 0,
         unpaid: 0
     });
+
+    const navigate = useNavigate();
+
 
     const { user } = useAuth();
 
@@ -76,9 +94,10 @@ function ViewAll() {
         setError("");
 
         try {
-            const querySnapshot = await getDocs(collection(db, "applications"));
-            const data = [];
+            // Add limit to the query
+            const querySnapshot = await getDocs(query(collection(db, "applications")));
 
+            const data = [];
             querySnapshot.forEach((doc) => {
                 data.push({
                     id: doc.id,
@@ -86,9 +105,8 @@ function ViewAll() {
                 });
             });
 
-            // Sort by AppNo in ascending order
+            // Sort the limited results
             data.sort((a, b) => {
-                // Extract numeric parts
                 const aNum = parseInt(a.AppNo?.replace('ME', '') || '0');
                 const bNum = parseInt(b.AppNo?.replace('ME', '') || '0');
                 return aNum - bNum;
@@ -103,7 +121,6 @@ function ViewAll() {
             setIsLoading(false);
         }
     };
-
     const calculateStats = (data) => {
         const stats = {
             total: data.length,
@@ -269,6 +286,19 @@ function ViewAll() {
         return isValid(parsedDate) ? format(parsedDate, 'dd/MM/yyyy') : 'Invalid date';
     }
 
+    const handleEditDetails = (id) => {
+        console.log(id);
+        // Navigate to the details page with the selected entry ID
+        // For example, using React Router:
+
+        navigate(`/search/${id}`);
+    };
+
+    const handleViewDetails = (row) => {
+        setSelectedStudent([row]);
+        setOpenView(true);
+    };
+
     return (
         <div>
             <NavBar currentPage={"View All Entries"} />
@@ -341,7 +371,7 @@ function ViewAll() {
                                 Management Entries
                             </Typography>
 
-                            {user?.email === "developer@gmail.com" && (
+                            {ADMIN_EMAILS.includes(user.email) && (
                                 <Stack direction="row" spacing={1}>
                                     <Tooltip title="Refresh Data">
                                         <IconButton onClick={fetchEntries} disabled={isLoading} color="primary">
@@ -413,7 +443,7 @@ function ViewAll() {
                                         {[
                                             "App No", "Name", "Mobile", "DOB", "Reg No",
                                             "Father", "School", "Gender", "Location",
-                                            "Nominee", "Payment", "Courses"
+                                            "Nominee", "Payment", "Courses", "Action"
                                         ].map((header) => (
                                             <TableCell
                                                 key={header}
@@ -531,6 +561,65 @@ function ViewAll() {
                                                         )}
                                                     </Box>
                                                 </TableCell>
+                                                <TableCell >
+                                                    <Box
+                                                        sx={{
+                                                            display: 'flex',
+                                                            gap: 1,
+                                                            justifyContent: 'center',
+                                                            alignItems: 'center',
+                                                            flexWrap: 'wrap'
+                                                        }}
+                                                    >
+                                                        <Button
+                                                            variant="outlined"
+                                                            color="primary"
+                                                            size="small"
+                                                            fullWidth
+                                                            startIcon={<SearchIcon />}
+                                                            onClick={() => handleEditDetails(row.AppNo)}
+                                                        >
+                                                            Edit
+                                                        </Button>
+                                                        <Button
+                                                            variant="outlined"
+                                                            color="primary"
+                                                            size="small"
+                                                            fullWidth
+                                                            startIcon={<ViewIcon />}
+                                                            onClick={() => handleViewDetails(row)}
+                                                        >
+                                                            View
+                                                        </Button>
+                                                    </Box>
+                                                    <Dialog
+                                                        open={openView}
+                                                        onClose={() => setOpenView(false)}
+                                                        fullScreen={true}  // Makes the dialog full screen
+                                                        TransitionComponent={Transition} // Optional animation
+                                                    >
+                                                        <AppBar sx={{ position: 'relative' }}>
+                                                            <Toolbar>
+                                                                <IconButton
+                                                                    edge="start"
+                                                                    color="inherit"
+                                                                    onClick={() => setOpenView(false)}
+                                                                    aria-label="close"
+                                                                >
+                                                                    <CloseIcon />
+                                                                </IconButton>
+                                                                <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
+                                                                    Student Details
+                                                                </Typography>
+                                                            </Toolbar>
+                                                        </AppBar>
+                                                        <DialogContent>
+                                                            {selectedStudent && (
+                                                                <StudentDetails data={selectedStudent} isManagement={true} />
+                                                            )}
+                                                        </DialogContent>
+                                                    </Dialog>
+                                                </TableCell>
                                             </TableRow>
                                         ))
                                     )}
@@ -551,7 +640,7 @@ function ViewAll() {
                     </Paper>
                 </Box>
             </Box>
-        </div>
+        </div >
     );
 }
 
