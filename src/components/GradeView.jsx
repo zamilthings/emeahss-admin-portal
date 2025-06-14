@@ -4,10 +4,8 @@ import { cbseMarksToGrade, stateMarksToGrade } from "../const/marksGrades"
 
 function GradeView({ student }) {
 
-
-
     return (
-        <> {student.Board === "Other" || student.Board === "STATE" ? (
+        <> {student?.Board === "Other" || student?.Board === "STATE" ? (
             <Table
                 sx={{
                     marginTop: "40px",
@@ -108,7 +106,7 @@ function GradeView({ student }) {
                     </TableRow>
                 </TableBody>
             </Table>
-        ) : student.Board === "CBSE" ? (
+        ) : student?.Board === "CBSE" ? (
             <Table
                 sx={{
                     marginTop: "40px",
