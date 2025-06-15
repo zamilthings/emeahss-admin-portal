@@ -201,9 +201,9 @@ const StudentRankingSystem = () => {
             BVP += settings.boardPoints['CBSE'];
             // console.log(`Board bonus for ${student.Name} (${student.AppNo}): ${settings.boardPoints['CBSE']}`);
         }
-        if (BVP > 0) {
-            BVP /= 10;
-        }
+        // if (BVP > 0) {
+        //     BVP /= 10;
+        // }
         // console.log(`Calculating BVP for ${student.Name} (${student.AppNo}) - ${BVP} `)
         const WGPA = (parseFloat(avp) + (BVP)).toFixed(3);
         return { WGPA, BVP: BVP.toFixed(2) };
