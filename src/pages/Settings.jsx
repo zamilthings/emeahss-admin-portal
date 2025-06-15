@@ -3,7 +3,7 @@ import {
     Box, Typography, Select, MenuItem, Button,
     Table, TableBody, TableCell, TableContainer,
     TableHead, TableRow, Paper, CircularProgress, Dialog, DialogTitle, DialogContent,
-    DialogActions, TextField, FormControl, InputLabel, Tabs, Tab
+    DialogActions, TextField, FormControl, InputLabel, Tabs, Tab, Chip
 } from '@mui/material';
 import { Download } from 'lucide-react';
 import { collection, getDocs, getDoc, doc, setDoc } from 'firebase/firestore';
@@ -53,7 +53,7 @@ const StudentRankingSystem = () => {
     const [settings, setSettings] = useState({
         panchayathPoints: {},
         nomineePoints: {},
-        schoolPoints: { 'EMEA HSS': 0 },
+        schoolPoints: { 'EMEA Higher Secondary School': 0 },
         boardPoints: { 'CBSE': 0 }
     });
     const [students, setStudents] = useState([]);
@@ -193,9 +193,9 @@ const StudentRankingSystem = () => {
             BVP += settings.nomineePoints[student.Nominee];
             // console.log(`Nominee bonus for ${student.Name} (${student.AppNo}): ${settings.nomineePoints[student.Nominee]}`);
         }
-        if (student.SchoolName === 'EMEA HSS' && settings.schoolPoints['EMEA HSS']) {
-            BVP += settings.schoolPoints['EMEA HSS'];
-            // console.log(`School bonus for ${student.Name} (${student.AppNo}): ${settings.schoolPoints['EMEA HSS']}`);
+        if (student.SchoolName === 'EMEA Higher Secondary School' && settings.schoolPoints['EMEA Higher Secondary School']) {
+            BVP += settings.schoolPoints['EMEA Higher Secondary School'];
+            console.log(`School bonus for ${student.Name} (${student.AppNo}): ${settings.schoolPoints['EMEA Higher Secondary School']}`);
         }
         if (student.Board === 'CBSE' && settings.boardPoints['CBSE']) {
             BVP += settings.boardPoints['CBSE'];
@@ -360,6 +360,7 @@ const StudentRankingSystem = () => {
                             ) : (
                                 <StudentTable
                                     students={filteredStudents}
+                                    settings={settings}
                                 />
                             )}
                         </Box>
@@ -517,10 +518,10 @@ const StudentRankingSystem = () => {
                                         type="number"
                                         fullWidth
                                         style={{ width: '200px' }}
-                                        value={settings.schoolPoints['EMEA HSS'] || 0}
+                                        value={settings.schoolPoints['EMEA Higher Secondary School'] || 0}
                                         onChange={(e) => setSettings(prev => ({
                                             ...prev,
-                                            schoolPoints: { 'EMEA HSS': parseFloat(e.target.value) || 0 }
+                                            schoolPoints: { 'EMEA Higher Secondary School': parseFloat(e.target.value) || 0 }
                                         }))}
                                         inputProps={{ step: "0.1", min: "0", max: "5" }}
                                     />
@@ -613,46 +614,143 @@ const StudentRankingSystem = () => {
 };
 
 // Sub-components
-const StudentTable = ({ students }) => {
+const StudentTable = ({ students, settings }) => {
     if (students.length === 0) return <Typography>No students found</Typography>;
 
     return (
-        <TableContainer component={Paper}>
-            <Table>
-                <TableHead>
-                    <TableRow>
-                        <TableCell>App No</TableCell>
-                        <TableCell>Name</TableCell>
-                        <TableCell>School</TableCell>
-                        <TableCell>Board</TableCell>
-                        <TableCell>Panchayath</TableCell>
-                        {/* <TableCell>Course 1</TableCell> */}
-                        <TableCell>Nominee</TableCell>
-                        <TableCell>AVP</TableCell>
-                        <TableCell>BVP</TableCell>
-                        <TableCell>WGPA</TableCell>
-                    </TableRow>
-                </TableHead>
-                <TableBody>
-                    {students.map((student) => {
-                        return (
-                            <TableRow key={student.id}>
-                                <TableCell>{student.AppNo}</TableCell>
-                                <TableCell>{student.Name}</TableCell>
-                                <TableCell>{student.SchoolName}</TableCell>
-                                <TableCell>{student.Board}</TableCell>
-                                <TableCell>{student.Panchayath}</TableCell>
-                                {/* <TableCell>{student.coursePreference1}</TableCell> */}
-                                <TableCell>{student.Nominee}</TableCell>
-                                <TableCell>{student.avp}</TableCell>
-                                <TableCell>{student.BVP}</TableCell>
-                                <TableCell>{student.WGPA}</TableCell>
-                            </TableRow>
-                        );
-                    })}
-                </TableBody>
-            </Table>
-        </TableContainer>
+        <div className='flex flex-col gap-4'>
+            {/* Bonus Points Header with Explanations */}
+            <Box sx={{
+                mb: 2,
+                p: 2,
+                backgroundColor: '#f5f5f5',
+                borderRadius: 1,
+                borderLeft: '4px solid #3f51b5'
+            }}>
+                <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 1 }}>
+                    Bonus Points Calculation
+                </Typography>
+
+                {/* Check if any bonus points exist */}
+                {(() => {
+                    const hasBoardPoints = Object.values(settings.boardPoints).some(points => points !== 0);
+                    const hasSchoolPoints = Object.values(settings.schoolPoints).some(points => points !== 0);
+                    const hasNomineePoints = Object.values(settings.nomineePoints).some(points => points !== 0);
+                    const hasPanchayathPoints = Object.values(settings.panchayathPoints).some(points => points !== 0);
+
+                    const hasAnyPoints = hasBoardPoints || hasSchoolPoints || hasNomineePoints || hasPanchayathPoints;
+
+                    return hasAnyPoints ? (
+                        <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+                            {/* Dynamic Board Points */}
+                            {Object.entries(settings.boardPoints).map(([board, points]) => (
+                                points !== 0 && (
+                                    <Chip
+                                        key={`board-${board}`}
+                                        label={`${board}: ${points} points`}
+                                        size="small"
+                                        variant="outlined"
+                                        sx={{ color: 'primary.main' }}
+                                    />
+                                )
+                            ))}
+
+                            {/* Dynamic School Points */}
+                            {Object.entries(settings.schoolPoints).map(([school, points]) => (
+                                points !== 0 && (
+                                    <Chip
+                                        key={`school-${school}`}
+                                        label={`${school}: ${points} points`}
+                                        size="small"
+                                        variant="outlined"
+                                        sx={{ color: 'secondary.main' }}
+                                    />
+                                )
+                            ))}
+
+                            {/* Dynamic Nominee Points */}
+                            {Object.entries(settings.nomineePoints).map(([nominee, points]) => (
+                                points !== 0 && (
+                                    <Chip
+                                        key={`nominee-${nominee}`}
+                                        label={`${nominee}: ${points} points`}
+                                        size="small"
+                                        variant="outlined"
+                                        sx={{ color: 'success.main' }}
+                                    />
+                                )
+                            ))}
+
+                            {/* Dynamic Panchayath Points */}
+                            {Object.entries(settings.panchayathPoints).map(([panchayath, points]) => (
+                                points !== 0 && (
+                                    <Chip
+                                        key={`panchayath-${panchayath}`}
+                                        label={`${panchayath}: ${points} points`}
+                                        size="small"
+                                        variant="outlined"
+                                        sx={{ color: 'warning.main' }}
+                                    />
+                                )
+                            ))}
+                        </Box>
+                    ) : (
+                        <Typography variant="body2" color="text.secondary" sx={{ fontStyle: 'italic' }}>
+                            No bonus points configured
+                        </Typography>
+                    );
+                })()}
+            </Box>
+
+            <Box sx={{
+                display: 'flex',
+                justifyContent: 'flex-end',
+                mb: 1,
+                p: 1,
+                backgroundColor: '#f8f9fa',
+                borderRadius: 1
+            }}>
+                <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
+                    Total Applications: {students?.length}
+                </Typography>
+            </Box>
+            <TableContainer component={Paper}>
+                <Table>
+                    <TableHead>
+                        <TableRow sx={{ backgroundColor: '#f0f0f0' }}>
+                            <TableCell sx={{ fontWeight: 'bold' }}>App No</TableCell>
+                            <TableCell sx={{ fontWeight: 'bold' }}>Name</TableCell>
+                            <TableCell sx={{ fontWeight: 'bold' }}>School</TableCell>
+                            <TableCell sx={{ fontWeight: 'bold' }}>Board</TableCell>
+                            <TableCell sx={{ fontWeight: 'bold' }}>Panchayath</TableCell>
+                            {/* <TableCell>Course 1</TableCell> */}
+                            <TableCell sx={{ fontWeight: 'bold' }}>Nominee</TableCell>
+                            <TableCell sx={{ fontWeight: 'bold' }}>AVP</TableCell>
+                            <TableCell sx={{ fontWeight: 'bold' }}>BVP</TableCell>
+                            <TableCell sx={{ fontWeight: 'bold' }}>WGPA</TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {students.map((student) => {
+                            return (
+                                <TableRow key={student.id}>
+                                    <TableCell>{student.AppNo}</TableCell>
+                                    <TableCell>{student.Name}</TableCell>
+                                    <TableCell>{student.SchoolName}</TableCell>
+                                    <TableCell>{student.Board}</TableCell>
+                                    <TableCell>{student.Panchayath}</TableCell>
+                                    {/* <TableCell>{student.coursePreference1}</TableCell> */}
+                                    <TableCell>{student.Nominee}</TableCell>
+                                    <TableCell>{student.avp}</TableCell>
+                                    <TableCell>{student.BVP}</TableCell>
+                                    <TableCell sx={{ fontWeight: 'bold' }}>{student.WGPA}</TableCell>
+                                </TableRow>
+                            );
+                        })}
+                    </TableBody>
+                </Table>
+            </TableContainer>
+        </div>
     );
 };
 
