@@ -93,4 +93,4 @@ export const courseOptions = [
 ]
 
 
-export const ADMIN_EMAILS = ["developer@gmail.com", "rihan@gmail.com"];
+export const ADMIN_EMAILS = ["developer@gmail.com", "superadmin@gmail.com"];
