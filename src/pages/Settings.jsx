@@ -54,7 +54,8 @@ const StudentRankingSystem = () => {
         panchayathPoints: {},
         nomineePoints: {},
         schoolPoints: { 'EMEA Higher Secondary School': 0 },
-        boardPoints: { 'CBSE': 0 }
+        boardPoints: { 'CBSE': 0 },
+        ournomineePoint: 0
     });
     const [students, setStudents] = useState([]);
     const [filteredStudents, setFilteredStudents] = useState([]);
@@ -195,12 +196,18 @@ const StudentRankingSystem = () => {
         }
         if (student.SchoolName === 'EMEA Higher Secondary School' && settings.schoolPoints['EMEA Higher Secondary School']) {
             BVP += settings.schoolPoints['EMEA Higher Secondary School'];
-            console.log(`School bonus for ${student.Name} (${student.AppNo}): ${settings.schoolPoints['EMEA Higher Secondary School']}`);
+            // console.log(`School bonus for ${student.Name} (${student.AppNo}): ${settings.schoolPoints['EMEA Higher Secondary School']}`);
         }
         if (student.Board === 'CBSE' && settings.boardPoints['CBSE']) {
             BVP += settings.boardPoints['CBSE'];
             // console.log(`Board bonus for ${student.Name} (${student.AppNo}): ${settings.boardPoints['CBSE']}`);
         }
+
+        // NEW: Add our nominee point if student's nominee is in our list
+        if (nomineesOptions.includes(student.Nominee) && settings.ournomineePoint) {
+            BVP += settings.ournomineePoint;
+        }
+
         // if (BVP > 0) {
         //     BVP /= 10;
         // }
@@ -544,6 +551,24 @@ const StudentRankingSystem = () => {
                                         inputProps={{ step: "0.1", min: "0", max: "5" }}
                                     />
                                 </Box>
+                                {/* 5. Bonus Point for our nominees*/}
+                                <Box sx={{ mb: 4 }}>
+                                    <Typography variant="h6" gutterBottom>
+                                        Our Nominee Bonus Point
+                                    </Typography>
+                                    <TextField
+                                        label="Bonus Point for our nominees"
+                                        type="number"
+                                        style={{ width: '200px' }}
+                                        value={settings.ournomineePoint || 0}
+                                        onChange={(e) => setSettings(prev => ({
+                                            ...prev,
+                                            ournomineePoint: parseFloat(e.target.value) || 0
+                                        }))}
+                                        inputProps={{ step: "0.1", min: "0", max: "5" }}
+                                        helperText="Applies to all students with nominees from our list"
+                                    />
+                                </Box>
                                 {/* Loading overlay */}
                                 {submitLoading && (
                                     <Box sx={{
@@ -616,7 +641,6 @@ const StudentRankingSystem = () => {
 // Sub-components
 const StudentTable = ({ students, settings }) => {
     if (students.length === 0) return <Typography>No students found</Typography>;
-
     return (
         <div className='flex flex-col gap-4'>
             {/* Bonus Points Header with Explanations */}
@@ -637,8 +661,9 @@ const StudentTable = ({ students, settings }) => {
                     const hasSchoolPoints = Object.values(settings.schoolPoints).some(points => points !== 0);
                     const hasNomineePoints = Object.values(settings.nomineePoints).some(points => points !== 0);
                     const hasPanchayathPoints = Object.values(settings.panchayathPoints).some(points => points !== 0);
+                    const hasOurNomineePoint = settings.ournomineePoint !== 0;
 
-                    const hasAnyPoints = hasBoardPoints || hasSchoolPoints || hasNomineePoints || hasPanchayathPoints;
+                    const hasAnyPoints = hasBoardPoints || hasSchoolPoints || hasNomineePoints || hasPanchayathPoints || hasOurNomineePoint;
 
                     return hasAnyPoints ? (
                         <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
@@ -693,6 +718,16 @@ const StudentTable = ({ students, settings }) => {
                                     />
                                 )
                             ))}
+
+                            {/* Our Nominee Point */}
+                            {hasOurNomineePoint && (
+                                <Chip
+                                    label={`Our Nominees: ${settings.ournomineePoint} points`}
+                                    size="small"
+                                    variant="outlined"
+                                    sx={{ color: 'info.main' }}
+                                />
+                            )}
                         </Box>
                     ) : (
                         <Typography variant="body2" color="text.secondary" sx={{ fontStyle: 'italic' }}>
